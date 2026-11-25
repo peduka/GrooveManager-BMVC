@@ -16,6 +16,10 @@
     box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--bg-main);
@@ -30,6 +34,7 @@ body {
     padding: 0 20px;
 }
 
+/* Cabeçalho */
 .topbar {
     background-color: var(--bg-panel);
     border-bottom: 1px solid var(--border-color);
@@ -70,15 +75,15 @@ body {
 
 .nav-links {
     display: flex;
-    gap: 18px;
+    gap: 14px;
 }
 
 .nav-links a {
     color: var(--text-main);
     text-decoration: none;
     font-weight: 600;
-    font-size: 0.95rem;
-    padding: 6px 10px;
+    font-size: 0.94rem;
+    padding: 6px 12px;
     border-radius: 6px;
     transition: background-color 0.2s, color 0.2s;
 }
@@ -88,6 +93,7 @@ body {
     color: var(--accent);
 }
 
+/* Cards principais */
 .card {
     background-color: var(--bg-panel);
     border: 1px solid var(--border-color);
@@ -108,12 +114,211 @@ body {
     margin-bottom: 16px;
 }
 
-.hero-text p {
-    color: var(--text-main);
-    margin-bottom: 20px;
-    max-width: 820px;
+/* Hero Split + Vitrola Ilustrativa */
+.hero-split {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 24px;
+    align-items: center;
+    margin-bottom: 22px;
 }
 
+@media (max-width: 780px) {
+    .hero-split {
+        grid-template-columns: 1fr;
+    }
+}
+
+.eyebrow {
+    display: inline-block;
+    color: var(--accent);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+}
+
+.hero-text h2 {
+    font-size: 1.55rem;
+    color: var(--text-main);
+    margin-bottom: 10px;
+}
+
+.hero-text p {
+    color: var(--text-muted);
+    margin-bottom: 18px;
+}
+
+.hero-text strong {
+    color: var(--text-main);
+}
+
+.hero-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-primary {
+    background-color: var(--accent);
+    color: var(--text-dark);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 9px 16px;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-hover);
+}
+
+.btn-secondary {
+    background-color: var(--bg-card);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 9px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* Palco do Disco de Vinil Animado */
+.turntable-stage {
+    position: relative;
+    background: radial-gradient(circle at center, #262633 0%, #16161d 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 20px 16px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+}
+
+.vinyl-disc {
+    position: relative;
+    width: 176px;
+    height: 176px;
+    border-radius: 50%;
+    background: conic-gradient(
+        from 0deg,
+        #111115 0deg,
+        #262630 40deg,
+        #111115 90deg,
+        #2a2a36 140deg,
+        #111115 210deg,
+        #252530 280deg,
+        #111115 360deg
+    );
+    border: 3px solid #2f2f3d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55);
+}
+
+.vinyl-disc.spinning {
+    animation: spinDisc 7s linear infinite;
+}
+
+@keyframes spinDisc {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.vinyl-grooves {
+    position: absolute;
+    inset: 14px;
+    border-radius: 50%;
+    border: 1px dashed rgba(255, 255, 255, 0.14);
+    pointer-events: none;
+}
+
+.vinyl-label {
+    width: 74px;
+    height: 74px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #f2bc57 0%, #c8871e 100%);
+    color: #121216;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4px;
+    border: 2px solid #121216;
+}
+
+.label-top {
+    font-size: 0.42rem;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+}
+
+.vinyl-label strong {
+    font-size: 0.55rem;
+    line-height: 1.1;
+    max-width: 62px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.vinyl-label span:last-of-type {
+    font-size: 0.44rem;
+    font-weight: 700;
+}
+
+.spindle-hole {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #121216;
+    margin-top: 2px;
+}
+
+.tonearm {
+    position: absolute;
+    top: 16px;
+    right: 26px;
+    width: 8px;
+    height: 92px;
+    background: linear-gradient(180deg, #a0a0b2, #525266);
+    border-radius: 4px;
+    transform: rotate(24deg);
+    transform-origin: top center;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+.tonearm::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: -5px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: var(--accent);
+    border: 2px solid #121216;
+}
+
+.stage-caption {
+    margin-top: 12px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+/* Cards de Formatos com SVG */
 .format-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -125,10 +330,28 @@ body {
     border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 16px;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.format-box:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+}
+
+.format-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.format-icon {
+    width: 38px;
+    height: 38px;
 }
 
 .format-box h3 {
-    margin: 8px 0 4px;
+    margin-bottom: 4px;
     font-size: 1.05rem;
 }
 
@@ -137,6 +360,7 @@ body {
     color: var(--text-muted);
 }
 
+/* Tags de formato */
 .tag {
     display: inline-block;
     padding: 2px 9px;
@@ -163,6 +387,7 @@ body {
     border: 1px solid rgba(56, 153, 111, 0.45);
 }
 
+/* Cabeçalho da seção catálogo e filtros */
 .section-header {
     display: flex;
     justify-content: space-between;
@@ -246,6 +471,7 @@ body {
     border-color: var(--accent);
 }
 
+/* Tabela */
 .table-wrapper {
     overflow-x: auto;
 }
@@ -301,6 +527,48 @@ body {
     display: none;
 }
 
+/* Cartão de Inspeção Técnica */
+.inspector-box {
+    margin-top: 18px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.inspector-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.inspector-badge {
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.6px;
+}
+
+.inspector-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.inspector-grid small {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+}
+
+.inspector-grid p {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+/* Painel de conservação com barra de progresso */
 .grade-panel {
     margin-top: 14px;
     background-color: var(--bg-card);
@@ -309,10 +577,37 @@ body {
     padding: 16px;
 }
 
+.grade-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
 .grade-panel h3 {
     color: var(--text-main);
-    margin-bottom: 6px;
     font-size: 1.05rem;
+}
+
+.grade-percent {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.progress-track {
+    width: 100%;
+    height: 8px;
+    background-color: var(--bg-main);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: var(--accent);
+    transition: width 0.3s ease;
 }
 
 .grade-panel p {
@@ -320,6 +615,7 @@ body {
     font-size: 0.92rem;
 }
 
+/* Rodapé e Toast */
 .footer {
     border-top: 1px solid var(--border-color);
     padding: 18px 0;
