@@ -3,51 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrooveManager Web — Catálogo de Mídias Físicas</title>
+    <title>GrooveManager Web — Catálogo CRUD de Mídias Físicas</title>
     <link rel="stylesheet" href="/static/css/groovemanager.css">
 </head>
 <body>
     <header class="topbar">
         <div class="container topbar-content">
             <div class="brand">
-                <span class="brand-badge">BMVC I • VITRINE WEB</span>
+                <span class="brand-badge">BMVC II • CRUD &amp; POO</span>
                 <h1>GrooveManager</h1>
                 <p>Gestão e catalogação de acervos de Vinil, CD e Fita Cassete</p>
             </div>
             <nav class="nav-links">
-                <a href="#proposito">Propósito</a>
-                <a href="#catalogo">Catálogo</a>
+                <a href="#cadastrar">Cadastrar</a>
+                <a href="#catalogo">Acervo ({{ len(midias) }})</a>
                 <a href="#guia-conservacao">Conservação</a>
             </nav>
         </div>
     </header>
 
     <main class="container">
+        % if aviso == 'cadastrado':
+        <div class="alert alert-success">Mídia cadastrada com sucesso no banco de dados!</div>
+        % elif aviso == 'atualizado':
+        <div class="alert alert-success">Registro atualizado com sucesso!</div>
+        % elif aviso == 'excluido':
+        <div class="alert alert-warning">Mídia removida do acervo.</div>
+        % elif aviso == 'erro':
+        <div class="alert alert-danger">Preencha os campos obrigatórios (Título, Artista e Ano).</div>
+        % end
+
         <!-- Seção 1: Propósito + Ilustração Interativa de Disco de Vinil -->
         <section id="proposito" class="hero card">
             <div class="hero-split">
                 <div class="hero-text">
-                    <span class="eyebrow">COLEÇÃO FÍSICA ORGANIZADA</span>
+                    <span class="eyebrow">MODELOS PYTHON + SQLITE</span>
                     <h2>Preserve a história física da sua coleção musical</h2>
                     <p>
-                        O <strong>GrooveManager</strong> foi projetado para colecionadores organizarem discos de
-                        <strong>Vinil</strong>, <strong>CDs</strong> e <strong>Fitas Cassete (K7)</strong>,
-                        registrando artista, ano de lançamento, estado de conservação e histórico de prensagem e compra.
+                        O <strong>GrooveManager</strong> instancia objetos <strong>Vinil</strong>, <strong>CD</strong> e
+                        <strong>K7</strong> (herdados da classe abstrata <code>Midia</code>), associando
+                        <strong>Artista</strong> e <strong>RegistroCompra</strong> em um acervo persistente.
                     </p>
                     <div class="hero-actions">
-                        <a href="#catalogo" class="btn-primary">Explorar Acervo Demo</a>
+                        <a href="#cadastrar" class="btn-primary">+ Nova Mídia</a>
                         <button type="button" id="btn-toggle-disco" class="btn-secondary">Pausar Rotação</button>
                     </div>
                 </div>
 
-                <!-- Ilustração SVG + CSS do Disco de Vinil -->
                 <div class="turntable-stage" aria-label="Ilustração interativa de disco de vinil">
                     <div id="disco-ilustrativo" class="vinyl-disc spinning">
                         <div class="vinyl-grooves"></div>
                         <div class="vinyl-label">
                             <span class="label-top">GROOVEMANAGER</span>
-                            <strong id="selo-album">DOOLITTLE</strong>
-                            <span id="selo-artista">PIXIES • 1989</span>
+                            <strong id="selo-album">{{ midias[0].titulo.upper() if midias else 'SEM DISCO' }}</strong>
+                            <span id="selo-artista">{{ f"{midias[0].artista.nome.upper()} • {midias[0].ano_lancamento}" if midias else 'ADICIONE UM ITEM' }}</span>
                             <div class="spindle-hole"></div>
                         </div>
                     </div>
@@ -56,7 +65,6 @@
                 </div>
             </div>
 
-            <!-- Cards Ilustrativos dos 3 Formatos -->
             <div class="format-grid">
                 <div class="format-box">
                     <div class="format-header">
@@ -103,16 +111,84 @@
             </div>
         </section>
 
-        <!-- Seção 2: Acervo de Demonstração + Cartão de Inspeção -->
+        <!-- Seção 2: CREATE — Formulário de Cadastro -->
+        <section id="cadastrar" class="card">
+            <h2>Cadastrar Nova Mídia no Acervo</h2>
+            <p class="subtitle">Os dados abaixo instanciam os objetos <code>Midia</code>, <code>Artista</code> e <code>RegistroCompra</code> no SQLite.</p>
+
+            <form action="/midias/criar" method="post" class="crud-form" id="form-cadastro">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="formato">Formato *</label>
+                        <select id="formato" name="formato" required>
+                            <option value="Vinil">Vinil</option>
+                            <option value="CD">CD</option>
+                            <option value="K7">K7</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="titulo">Título do Álbum *</label>
+                        <input type="text" id="titulo" name="titulo" placeholder="Ex.: Racional Vol. 1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="artista">Artista / Banda *</label>
+                        <input type="text" id="artista" name="artista" placeholder="Ex.: Tim Maia" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pais_origem">País de Origem *</label>
+                        <input type="text" id="pais_origem" name="pais_origem" placeholder="Ex.: Brasil" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ano_lancamento">Ano Lançamento *</label>
+                        <input type="number" id="ano_lancamento" name="ano_lancamento" min="1900" max="2026" placeholder="1975" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="estado_conservacao">Conservação *</label>
+                        <select id="estado_conservacao" name="estado_conservacao" required>
+                            <option value="Lacrado">Lacrado</option>
+                            <option value="Excelente" selected>Excelente</option>
+                            <option value="Bom">Bom</option>
+                            <option value="Ruim">Ruim</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="valor">Valor Pago (R$) *</label>
+                        <input type="number" id="valor" name="valor" step="0.01" min="0" placeholder="150.00" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="data_prensagem">Data / Ano Prensagem</label>
+                        <input type="text" id="data_prensagem" name="data_prensagem" placeholder="Ex.: 1975">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="local_prensagem">Local de Prensagem</label>
+                        <input type="text" id="local_prensagem" name="local_prensagem" placeholder="Ex.: Brasil">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Salvar Mídia no Banco</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Seção 3: READ / UPDATE / DELETE — Tabela Dinâmica -->
         <section id="catalogo" class="card">
             <div class="section-header">
                 <div>
-                    <h2>Acervo de Demonstração</h2>
-                    <p class="subtitle">Filtre por formato, pesquise por texto ou clique em <strong>Ficha</strong> para inspecionar o item.</p>
+                    <h2>Acervo Catalogado (Banco SQLite)</h2>
+                    <p class="subtitle">Filtre por formato, pesquise em tempo real, inspecione, edite ou remova registros.</p>
                 </div>
                 <div class="summary-pills">
-                    <span class="pill">Exibindo: <strong id="contador-itens">4</strong> mídia(s)</span>
-                    <span class="pill">Valor estimado: <strong id="valor-total">R$ 590,00</strong></span>
+                    <span class="pill">Exibindo: <strong id="contador-itens">{{ len(midias) }}</strong> mídia(s)</span>
+                    <span class="pill">Valor estimado: <strong id="valor-total">R$ {{ f"{valor_total:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".") }}</strong></span>
                 </div>
             </div>
 
@@ -142,112 +218,72 @@
                             <th>Ano</th>
                             <th>Conservação</th>
                             <th>Valor Pago</th>
-                            <th>Ação</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody id="tabela-acervo">
-                        <tr data-formato="Vinil" data-valor="180.00">
-                            <td><span class="tag tag-vinil">Vinil</span></td>
-                            <td>Doolittle</td>
-                            <td>Pixies (EUA)</td>
-                            <td>1989</td>
-                            <td>Excelente</td>
-                            <td>R$ 180,00</td>
-                            <td>
+                        % for m in midias:
+                        % valor_fmt = f"R$ {m.registro_compra.valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+                        <tr data-formato="{{ m.formato }}" data-valor="{{ f'{m.registro_compra.valor:.2f}' }}">
+                            <td><span class="tag tag-{{ m.formato.lower() }}">{{ m.formato }}</span></td>
+                            <td>{{ m.titulo }}</td>
+                            <td>{{ m.artista.nome }} ({{ m.artista.pais_origem }})</td>
+                            <td>{{ m.ano_lancamento }}</td>
+                            <td>{{ m.estado_conservacao }}</td>
+                            <td>{{ valor_fmt }}</td>
+                            <td class="actions-cell">
                                 <button type="button" class="btn-detail"
-                                    data-titulo="Doolittle"
-                                    data-artista="Pixies"
-                                    data-ano="1989"
-                                    data-formato="Vinil"
-                                    data-conservacao="Excelente"
-                                    data-prensagem="22/08/1990 • Inglaterra"
-                                    data-valor="R$ 180,00">Ficha</button>
+                                    data-titulo="{{ m.titulo }}"
+                                    data-artista="{{ m.artista.nome }}"
+                                    data-ano="{{ m.ano_lancamento }}"
+                                    data-formato="{{ m.formato }}"
+                                    data-espec="{{ m.detalhe_formato() }}"
+                                    data-conservacao="{{ m.estado_conservacao }}"
+                                    data-prensagem="{{ m.registro_compra.data_prensagem }} • {{ m.registro_compra.local_prensagem }}"
+                                    data-valor="{{ valor_fmt }}">Ficha</button>
+
+                                <a href="/midias/editar/{{ m.id }}" class="btn-edit">Editar</a>
+
+                                <form action="/midias/excluir/{{ m.id }}" method="post" class="inline-form form-excluir" data-titulo="{{ m.titulo }}">
+                                    <button type="submit" class="btn-delete">Excluir</button>
+                                </form>
                             </td>
                         </tr>
-                        <tr data-formato="CD" data-valor="100.00">
-                            <td><span class="tag tag-cd">CD</span></td>
-                            <td>Surfer Rosa</td>
-                            <td>Pixies (EUA)</td>
-                            <td>1988</td>
-                            <td>Bom</td>
-                            <td>R$ 100,00</td>
-                            <td>
-                                <button type="button" class="btn-detail"
-                                    data-titulo="Surfer Rosa"
-                                    data-artista="Pixies"
-                                    data-ano="1988"
-                                    data-formato="CD"
-                                    data-conservacao="Bom"
-                                    data-prensagem="30/10/2001 • EUA"
-                                    data-valor="R$ 100,00">Ficha</button>
-                            </td>
-                        </tr>
-                        <tr data-formato="Vinil" data-valor="250.00">
-                            <td><span class="tag tag-vinil">Vinil</span></td>
-                            <td>Tim Maia</td>
-                            <td>Tim Maia (Brasil)</td>
-                            <td>1970</td>
-                            <td>Bom</td>
-                            <td>R$ 250,00</td>
-                            <td>
-                                <button type="button" class="btn-detail"
-                                    data-titulo="Tim Maia"
-                                    data-artista="Tim Maia"
-                                    data-ano="1970"
-                                    data-formato="Vinil"
-                                    data-conservacao="Bom"
-                                    data-prensagem="10/11/1970 • Brasil"
-                                    data-valor="R$ 250,00">Ficha</button>
-                            </td>
-                        </tr>
-                        <tr data-formato="K7" data-valor="60.00">
-                            <td><span class="tag tag-k7">K7</span></td>
-                            <td>The Dark Side of the Moon</td>
-                            <td>Pink Floyd (Inglaterra)</td>
-                            <td>1973</td>
-                            <td>Excelente</td>
-                            <td>R$ 60,00</td>
-                            <td>
-                                <button type="button" class="btn-detail"
-                                    data-titulo="The Dark Side of the Moon"
-                                    data-artista="Pink Floyd"
-                                    data-ano="1973"
-                                    data-formato="K7"
-                                    data-conservacao="Excelente"
-                                    data-prensagem="01/03/1973 • Inglaterra"
-                                    data-valor="R$ 60,00">Ficha</button>
-                            </td>
-                        </tr>
+                        % end
                     </tbody>
                 </table>
             </div>
 
-            <p id="mensagem-vazia" class="empty-state hidden">Nenhuma mídia encontrada para o filtro selecionado.</p>
+            <p id="mensagem-vazia" class="empty-state {{ 'hidden' if midias else '' }}">Nenhuma mídia encontrada.</p>
 
             <!-- Cartão Ilustrativo de Ficha Técnica Selecionada -->
+            % if midias:
+            % primeira = midias[0]
+            % primeira_valor = f"R$ {primeira.registro_compra.valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
             <div class="inspector-box">
                 <div class="inspector-header">
                     <span class="inspector-badge">FICHA TÉCNICA EM DESTAQUE</span>
-                    <span id="ficha-formato" class="tag tag-vinil">Vinil</span>
+                    <span id="ficha-formato" class="tag tag-{{ primeira.formato.lower() }}">{{ primeira.formato }}</span>
                 </div>
                 <div class="inspector-grid">
                     <div>
                         <small>Álbum &amp; Artista</small>
-                        <p id="ficha-titulo">Doolittle — Pixies (1989)</p>
+                        <p id="ficha-titulo">{{ primeira.titulo }} — {{ primeira.artista.nome }} ({{ primeira.ano_lancamento }})</p>
                     </div>
                     <div>
-                        <small>Registro de Prensagem</small>
-                        <p id="ficha-prensagem">22/08/1990 • Inglaterra</p>
+                        <small>Especificação &amp; Prensagem</small>
+                        <p id="ficha-prensagem">{{ primeira.detalhe_formato() }} • {{ primeira.registro_compra.local_prensagem }} ({{ primeira.registro_compra.data_prensagem }})</p>
                     </div>
                     <div>
                         <small>Conservação &amp; Valor</small>
-                        <p id="ficha-valor">Excelente • R$ 180,00</p>
+                        <p id="ficha-valor">{{ primeira.estado_conservacao }} • {{ primeira_valor }}</p>
                     </div>
                 </div>
             </div>
+            % end
         </section>
 
-        <!-- Seção 3: Guia Interativo de Conservação -->
+        <!-- Seção 4: Guia Interativo de Conservação -->
         <section id="guia-conservacao" class="card">
             <h2>Guia Rápido de Conservação &amp; Valorização</h2>
             <p class="subtitle">Clique nos estados abaixo para visualizar o critério técnico e a barra de integridade:</p>
@@ -274,7 +310,7 @@
 
     <footer class="footer">
         <div class="container">
-            <p>GrooveManager • Projeto de Orientação a Objetos (UnB FGA) • Arquitetura BMVC (Bottle + MVC)</p>
+            <p>GrooveManager • Projeto de Orientação a Objetos (UnB FGA) • Arquitetura BMVC II</p>
         </div>
     </footer>
 

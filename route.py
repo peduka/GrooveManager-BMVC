@@ -7,7 +7,7 @@ ctl = Application()
 
 
 # -----------------------------------------------------------------------------
-# Rotas:
+# Rotas estáticas e utilitárias:
 
 @app.route('/static/<filepath:path>')
 def serve_static(filepath):
@@ -20,11 +20,31 @@ def helper():
 
 
 # -----------------------------------------------------------------------------
-# Rotas do GrooveManager (BMVC I):
+# Rotas CRUD do GrooveManager (BMVC II):
 
 @app.route('/')
 def index():
     return ctl.render('index')
+
+
+@app.post('/midias/criar')
+def criar_midia():
+    return ctl.criar_midia()
+
+
+@app.get('/midias/editar/<midia_id:int>')
+def pagina_editar(midia_id):
+    return ctl.pagina_editar(midia_id)
+
+
+@app.post('/midias/editar/<midia_id:int>')
+def atualizar_midia(midia_id):
+    return ctl.atualizar_midia(midia_id)
+
+
+@app.post('/midias/excluir/<midia_id:int>')
+def excluir_midia(midia_id):
+    return ctl.excluir_midia(midia_id)
 
 
 # -----------------------------------------------------------------------------
