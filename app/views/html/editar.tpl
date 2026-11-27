@@ -10,12 +10,14 @@
     <header class="topbar">
         <div class="container topbar-content">
             <div class="brand">
-                <span class="brand-badge">BMVC II • EDIÇÃO (UPDATE)</span>
+                <span class="brand-badge">BMVC III • EDIÇÃO RESTRITA</span>
                 <h1>GrooveManager</h1>
                 <p>Atualização de registro no acervo</p>
             </div>
             <nav class="nav-links">
-                <a href="/">← Voltar ao Acervo</a>
+                <span class="user-pill">Usuário: <strong>{{ usuario.username }}</strong></span>
+                <a href="/acervo">← Voltar à Área Restrita</a>
+                <a href="/logout" class="nav-logout">Sair</a>
             </nav>
         </div>
     </header>
@@ -84,10 +86,12 @@
 
                 <div class="form-actions">
                     <button type="submit" class="btn-primary">Salvar Alterações</button>
-                    <a href="/" class="btn-secondary" style="text-decoration: none;">Cancelar</a>
+                    <a href="/acervo" class="btn-secondary" style="text-decoration: none;">Cancelar</a>
                 </div>
             </form>
         </section>
     </main>
+
+    <script src="/static/js/groovemanager.js"></script>
 </body>
 </html>

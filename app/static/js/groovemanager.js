@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("[GrooveManager JS] BMVC II inicializado.");
+    console.log("[GrooveManager JS] BMVC III inicializado.");
 
     // Controle do disco ilustrativo
     const discoEl = document.getElementById("disco-ilustrativo");
@@ -30,6 +30,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const gradeBar = document.getElementById("grade-bar");
     const gradeDescricao = document.getElementById("grade-descricao");
     const toast = document.getElementById("toast");
+
+    // Abas e senha da tela de Login/Cadastro (BMVC III)
+    const authTabs = document.querySelectorAll(".btn-auth-tab");
+    const authForms = document.querySelectorAll(".auth-form");
+    const togglePassBtns = document.querySelectorAll(".btn-toggle-pass");
 
     let formatoAtivo = "Todos";
     let timerToast = null;
@@ -66,6 +71,30 @@ document.addEventListener("DOMContentLoaded", () => {
             toast.classList.remove("show");
         }, 2800);
     }
+
+    // Alternância entre abas Login e Cadastro
+    authTabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+            authTabs.forEach((t) => t.classList.remove("active"));
+            tab.classList.add("active");
+
+            const alvo = tab.dataset.tab;
+            authForms.forEach((form) => {
+                form.classList.toggle("hidden", form.id !== alvo);
+            });
+        });
+    });
+
+    // Botão Mostrar/Ocultar senha
+    togglePassBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const input = document.getElementById(btn.dataset.target);
+            if (!input) return;
+            const oculto = input.type === "password";
+            input.type = oculto ? "text" : "password";
+            btn.textContent = oculto ? "Ocultar" : "Mostrar";
+        });
+    });
 
     if (btnToggleDisco && discoEl) {
         btnToggleDisco.addEventListener("click", () => {
@@ -160,6 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const chave = botao.dataset.grade;
             const info = criteriosConservacao[chave];
+            if (!info) return;
             gradeTitulo.textContent = info.titulo;
             gradePercent.textContent = info.percentual;
             gradeBar.style.width = info.percentual;

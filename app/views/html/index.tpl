@@ -3,49 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrooveManager Web — Catálogo CRUD de Mídias Físicas</title>
+    <title>GrooveManager Web — Vitrine Pública do Acervo</title>
     <link rel="stylesheet" href="/static/css/groovemanager.css">
 </head>
 <body>
     <header class="topbar">
         <div class="container topbar-content">
             <div class="brand">
-                <span class="brand-badge">BMVC II • CRUD &amp; POO</span>
+                <span class="brand-badge">BMVC III • VITRINE PÚBLICA</span>
                 <h1>GrooveManager</h1>
                 <p>Gestão e catalogação de acervos de Vinil, CD e Fita Cassete</p>
             </div>
             <nav class="nav-links">
-                <a href="#cadastrar">Cadastrar</a>
-                <a href="#catalogo">Acervo ({{ len(midias) }})</a>
+                <a href="#catalogo">Acervo Público</a>
                 <a href="#guia-conservacao">Conservação</a>
+                % if usuario:
+                <a href="/acervo" class="nav-cta">Área Restrita ({{ usuario.username }})</a>
+                <a href="/logout" class="nav-logout">Sair</a>
+                % else:
+                <a href="/login" class="nav-cta">Entrar / Gerenciar</a>
+                % end
             </nav>
         </div>
     </header>
 
     <main class="container">
-        % if aviso == 'cadastrado':
-        <div class="alert alert-success">Mídia cadastrada com sucesso no banco de dados!</div>
-        % elif aviso == 'atualizado':
-        <div class="alert alert-success">Registro atualizado com sucesso!</div>
-        % elif aviso == 'excluido':
-        <div class="alert alert-warning">Mídia removida do acervo.</div>
-        % elif aviso == 'erro':
-        <div class="alert alert-danger">Preencha os campos obrigatórios (Título, Artista e Ano).</div>
-        % end
-
-        <!-- Seção 1: Propósito + Ilustração Interativa de Disco de Vinil -->
+        <!-- Seção 1: Propósito + Vitrola Ilustrativa -->
         <section id="proposito" class="hero card">
             <div class="hero-split">
                 <div class="hero-text">
-                    <span class="eyebrow">MODELOS PYTHON + SQLITE</span>
+                    <span class="eyebrow">ACESSO PÚBLICO • SOMENTE LEITURA</span>
                     <h2>Preserve a história física da sua coleção musical</h2>
                     <p>
-                        O <strong>GrooveManager</strong> instancia objetos <strong>Vinil</strong>, <strong>CD</strong> e
-                        <strong>K7</strong> (herdados da classe abstrata <code>Midia</code>), associando
-                        <strong>Artista</strong> e <strong>RegistroCompra</strong> em um acervo persistente.
+                        O <strong>GrooveManager</strong> organiza discos de <strong>Vinil</strong>, <strong>CDs</strong> e
+                        <strong>Fitas Cassete (K7)</strong> usando modelos orientados a objetos em Python.
+                        Explore a vitrine pública abaixo ou faça login para acessar a <strong>área restrita de gerenciamento</strong>.
                     </p>
                     <div class="hero-actions">
-                        <a href="#cadastrar" class="btn-primary">+ Nova Mídia</a>
+                        % if usuario:
+                        <a href="/acervo" class="btn-primary">Ir para Meu Acervo Restrito</a>
+                        % else:
+                        <a href="/login" class="btn-primary">Fazer Login para Editar Acervo</a>
+                        % end
                         <button type="button" id="btn-toggle-disco" class="btn-secondary">Pausar Rotação</button>
                     </div>
                 </div>
@@ -56,7 +55,7 @@
                         <div class="vinyl-label">
                             <span class="label-top">GROOVEMANAGER</span>
                             <strong id="selo-album">{{ midias[0].titulo.upper() if midias else 'SEM DISCO' }}</strong>
-                            <span id="selo-artista">{{ f"{midias[0].artista.nome.upper()} • {midias[0].ano_lancamento}" if midias else 'ADICIONE UM ITEM' }}</span>
+                            <span id="selo-artista">{{ f"{midias[0].artista.nome.upper()} • {midias[0].ano_lancamento}" if midias else 'CATÁLOGO VAZIO' }}</span>
                             <div class="spindle-hole"></div>
                         </div>
                     </div>
@@ -111,80 +110,12 @@
             </div>
         </section>
 
-        <!-- Seção 2: CREATE — Formulário de Cadastro -->
-        <section id="cadastrar" class="card">
-            <h2>Cadastrar Nova Mídia no Acervo</h2>
-            <p class="subtitle">Os dados abaixo instanciam os objetos <code>Midia</code>, <code>Artista</code> e <code>RegistroCompra</code> no SQLite.</p>
-
-            <form action="/midias/criar" method="post" class="crud-form" id="form-cadastro">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="formato">Formato *</label>
-                        <select id="formato" name="formato" required>
-                            <option value="Vinil">Vinil</option>
-                            <option value="CD">CD</option>
-                            <option value="K7">K7</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="titulo">Título do Álbum *</label>
-                        <input type="text" id="titulo" name="titulo" placeholder="Ex.: Racional Vol. 1" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="artista">Artista / Banda *</label>
-                        <input type="text" id="artista" name="artista" placeholder="Ex.: Tim Maia" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="pais_origem">País de Origem *</label>
-                        <input type="text" id="pais_origem" name="pais_origem" placeholder="Ex.: Brasil" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="ano_lancamento">Ano Lançamento *</label>
-                        <input type="number" id="ano_lancamento" name="ano_lancamento" min="1900" max="2026" placeholder="1975" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="estado_conservacao">Conservação *</label>
-                        <select id="estado_conservacao" name="estado_conservacao" required>
-                            <option value="Lacrado">Lacrado</option>
-                            <option value="Excelente" selected>Excelente</option>
-                            <option value="Bom">Bom</option>
-                            <option value="Ruim">Ruim</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="valor">Valor Pago (R$) *</label>
-                        <input type="number" id="valor" name="valor" step="0.01" min="0" placeholder="150.00" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="data_prensagem">Data / Ano Prensagem</label>
-                        <input type="text" id="data_prensagem" name="data_prensagem" placeholder="Ex.: 1975">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="local_prensagem">Local de Prensagem</label>
-                        <input type="text" id="local_prensagem" name="local_prensagem" placeholder="Ex.: Brasil">
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn-primary">Salvar Mídia no Banco</button>
-                </div>
-            </form>
-        </section>
-
-        <!-- Seção 3: READ / UPDATE / DELETE — Tabela Dinâmica -->
+        <!-- Seção 2: Vitrine Somente Leitura -->
         <section id="catalogo" class="card">
             <div class="section-header">
                 <div>
-                    <h2>Acervo Catalogado (Banco SQLite)</h2>
-                    <p class="subtitle">Filtre por formato, pesquise em tempo real, inspecione, edite ou remova registros.</p>
+                    <h2>Vitrine Pública do Acervo</h2>
+                    <p class="subtitle">Consulta aberta a visitantes. Para cadastrar, editar ou excluir mídias, acesse a <a href="/login" style="color: var(--accent);">Área Restrita</a>.</p>
                 </div>
                 <div class="summary-pills">
                     <span class="pill">Exibindo: <strong id="contador-itens">{{ len(midias) }}</strong> mídia(s)</span>
@@ -217,8 +148,8 @@
                             <th>Artista</th>
                             <th>Ano</th>
                             <th>Conservação</th>
-                            <th>Valor Pago</th>
-                            <th>Ações</th>
+                            <th>Valor Estimado</th>
+                            <th>Inspeção</th>
                         </tr>
                     </thead>
                     <tbody id="tabela-acervo">
@@ -231,7 +162,7 @@
                             <td>{{ m.ano_lancamento }}</td>
                             <td>{{ m.estado_conservacao }}</td>
                             <td>{{ valor_fmt }}</td>
-                            <td class="actions-cell">
+                            <td>
                                 <button type="button" class="btn-detail"
                                     data-titulo="{{ m.titulo }}"
                                     data-artista="{{ m.artista.nome }}"
@@ -241,12 +172,6 @@
                                     data-conservacao="{{ m.estado_conservacao }}"
                                     data-prensagem="{{ m.registro_compra.data_prensagem }} • {{ m.registro_compra.local_prensagem }}"
                                     data-valor="{{ valor_fmt }}">Ficha</button>
-
-                                <a href="/midias/editar/{{ m.id }}" class="btn-edit">Editar</a>
-
-                                <form action="/midias/excluir/{{ m.id }}" method="post" class="inline-form form-excluir" data-titulo="{{ m.titulo }}">
-                                    <button type="submit" class="btn-delete">Excluir</button>
-                                </form>
                             </td>
                         </tr>
                         % end
@@ -256,7 +181,6 @@
 
             <p id="mensagem-vazia" class="empty-state {{ 'hidden' if midias else '' }}">Nenhuma mídia encontrada.</p>
 
-            <!-- Cartão Ilustrativo de Ficha Técnica Selecionada -->
             % if midias:
             % primeira = midias[0]
             % primeira_valor = f"R$ {primeira.registro_compra.valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
@@ -283,7 +207,7 @@
             % end
         </section>
 
-        <!-- Seção 4: Guia Interativo de Conservação -->
+        <!-- Seção 3: Guia Interativo de Conservação -->
         <section id="guia-conservacao" class="card">
             <h2>Guia Rápido de Conservação &amp; Valorização</h2>
             <p class="subtitle">Clique nos estados abaixo para visualizar o critério técnico e a barra de integridade:</p>
@@ -310,7 +234,7 @@
 
     <footer class="footer">
         <div class="container">
-            <p>GrooveManager • Projeto de Orientação a Objetos (UnB FGA) • Arquitetura BMVC II</p>
+            <p>GrooveManager • Projeto de Orientação a Objetos (UnB FGA) • Arquitetura BMVC III</p>
         </div>
     </footer>
 

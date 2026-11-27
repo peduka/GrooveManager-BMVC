@@ -75,7 +75,9 @@ body {
 
 .nav-links {
     display: flex;
-    gap: 14px;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
 }
 
 .nav-links a {
@@ -90,6 +92,37 @@ body {
 
 .nav-links a:hover {
     background-color: var(--bg-card);
+    color: var(--accent);
+}
+
+.nav-cta {
+    background-color: var(--accent);
+    color: var(--text-dark) !important;
+}
+
+.nav-cta:hover {
+    background-color: var(--accent-hover) !important;
+}
+
+.nav-logout {
+    border: 1px solid rgba(239, 68, 68, 0.45);
+    color: #fca5a5 !important;
+}
+
+.nav-logout:hover {
+    background-color: rgba(239, 68, 68, 0.2) !important;
+}
+
+.user-pill {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.user-pill strong {
     color: var(--accent);
 }
 
@@ -397,7 +430,7 @@ body {
     color: var(--text-muted);
 }
 
-/* Formulário CRUD */
+/* Formulários CRUD e Login */
 .form-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
@@ -437,6 +470,70 @@ body {
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
+}
+
+.auth-container {
+    max-width: 540px;
+    margin: 24px auto 40px;
+}
+
+.auth-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.btn-auth-tab {
+    background-color: var(--bg-card);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    padding: 10px;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-auth-tab.active {
+    background-color: var(--accent);
+    color: var(--text-dark);
+    border-color: var(--accent);
+}
+
+.demo-credentials {
+    background-color: var(--bg-card);
+    border: 1px dashed var(--accent);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 0.86rem;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+.password-wrapper {
+    display: flex;
+    gap: 8px;
+}
+
+.password-wrapper input {
+    flex: 1;
+}
+
+.btn-toggle-pass {
+    background-color: var(--bg-card);
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0 12px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-toggle-pass:hover {
+    border-color: var(--accent);
+    color: var(--accent);
 }
 
 /* Tags de formato */

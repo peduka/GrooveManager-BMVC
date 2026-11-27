@@ -20,11 +20,39 @@ def helper():
 
 
 # -----------------------------------------------------------------------------
-# Rotas CRUD do GrooveManager (BMVC II):
+# Rotas públicas e autenticação (BMVC III):
 
 @app.route('/')
 def index():
     return ctl.render('index')
+
+
+@app.get('/login')
+def pagina_login():
+    return ctl.pagina_login()
+
+
+@app.post('/login')
+def autenticar():
+    return ctl.autenticar()
+
+
+@app.post('/cadastro')
+def registrar_usuario():
+    return ctl.registrar_usuario()
+
+
+@app.get('/logout')
+def logout():
+    return ctl.logout()
+
+
+# -----------------------------------------------------------------------------
+# Rotas restritas (exigem login ativo):
+
+@app.get('/acervo')
+def acervo_restrito():
+    return ctl.acervo_restrito()
 
 
 @app.post('/midias/criar')
